@@ -1,0 +1,72 @@
+sudo: true
+language: haskell
+
+git:
+  depth: 5
+
+cabal: "2.4"
+
+cache:
+  directories:
+  - "$HOME/.cabal/store"
+  - "$HOME/.stack"
+  - "$TRAVIS_BUILD_DIR/.stack-work"
+
+matrix:
+  include:
+  - ghc: 8.6.4
+
+  - ghc: 8.6.4
+    env: STACK_YAML="$TRAVIS_BUILD_DIR/stack-14.12.yaml"
+
+  - ghc: 8.8.3
+    env: STACK_YAML="$TRAVIS_BUILD_DIR/stack-15.4.yaml"
+
+install:
+  - |
+    cd $TRAVIS_BUILD_DIR
+    for i in $(git ls-files); do
+        if ( grep -q '\s$' "$i" ); then
+            echo "trailing whitespace in $i"
+            BAD=1
+        fi
+    done
+    if [ "$BAD" == "1" ]; then
+        echo "there were errors."
+        exit 1
+    fi
+
+  - |
+    if [ -z "$STACK_YAML" ]; then
+      echo -e "\n\n>>> WITH CABAL\n"
+      ghc --version
+      cabal --version
+      for package in servant-uverb{,-client,-server,-mock,-swagger}; do
+        cd $package
+        cabal new-update
+        cabal new-build --enable-tests --enable-benchmarks
+        cd ..
+      done
+    else
+      echo -e "\n\n>>> WITH STACK\n"
+      curl -sSL https://get.haskellstack.org/ | sh
+      stack --version
+      stack --stack-yaml=$STACK_YAML build --system-ghc --test --bench --no-run-tests --no-run-benchmarks --ghc-options=-Werror
+    fi
+
+script:
+  - |
+    if [ -z "$STACK_YAML" ]; then
+      echo -e "\n\n>>> WITH CABAL\n"
+      for package in servant-uverb{,-client,-server,-mock,-swagger}; do
+        cd $package
+        cabal new-test --enable-tests
+        cd ..
+      done
+    else
+      echo -e "\n\n>>> WITH STACK\n"
+      stack test --system-ghc
+    fi
+
+notifications:
+  email: false
