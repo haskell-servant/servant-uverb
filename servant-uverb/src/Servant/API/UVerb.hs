@@ -24,8 +24,9 @@ import Data.SOP.NS (NS)
 import Data.Typeable (Proxy (Proxy))
 import qualified GHC.Generics as GHC
 import GHC.TypeLits (KnownNat, Nat)
-import Network.HTTP.Types (Status, StdMethod, status201, status203, status303)
+import Network.HTTP.Types (Status, StdMethod, status201, status203, status204, status303)
 import Servant.API.UVerb.OpenUnion
+import Servant.API.ContentTypes (NoContent)
 
 class KnownStatus (StatusOf a) => HasStatus (a :: *) where
   type StatusOf (a :: *) :: Nat
@@ -44,6 +45,12 @@ newtype WithStatus (k :: Nat) a = WithStatus a
 
 instance KnownStatus n => HasStatus (WithStatus n a) where
   type StatusOf (WithStatus n a) = n
+
+-- | If an API can respond with 'NoContent' we assume that this will happen
+-- with the status code 204 No Content. If this needs to be overridden,
+-- 'WithStatus' can be used.
+instance HasStatus NoContent where
+  type StatusOf NoContent = 204
 
 -- FUTUREWORK:
 -- @type Verb method statusCode contentTypes a = UVerb method contentTypes [WithStatus statusCode a]@
@@ -64,6 +71,9 @@ instance KnownStatus 201 where
 
 instance KnownStatus 203 where
   statusVal = const status203
+
+instance KnownStatus 204 where
+  statusVal = const status204
 
 instance KnownStatus 303 where
   statusVal = const status303
