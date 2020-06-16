@@ -5,9 +5,9 @@ synopsis:            See README for more info
 description:         See README for more info
 homepage:            https://github.com/haskell-servant/servant-uverb
 bug-reports:         https://github.com/haskell-servant/servant-uverb/issues
-license:             AGPL-3.0-only
+license:             BSD3
 license-file:        LICENSE
-author:              Arian van Putten, Matthias Fischmann, Nathan van Doorn
+author:              Servant Contributors
 maintainer:          backend@wire.com
 copyright:           (c) 2017 Wire Swiss GmbH
 category:            Web
