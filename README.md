@@ -1,3 +1,10 @@
+# DEPRECATED
+
+
+please wiat for https://github.com/haskell-servant/servant/pull/1314 to be released instead.
+
+
+
 # servant-uverb
 
 [![Hackage](https://img.shields.io/hackage/v/servant-uverb.svg?logo=haskell)](https://hackage.haskell.org/package/servant-uverb)
